@@ -1,18 +1,14 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
-                   assembly="MusicMerge" 
-                   namespace="MusicMerge.Domain">
+                   assembly="Model" 
+                   namespace="MusicTool.Model.Domain">
 
   <class name="MusicFile" table="files">
   	<id name="Id" unsaved-value="0">
 		<generator class="native" />
 	</id>
-<!--
-	<id name="Id" unsaved-value="null">
-		<generator class="guid" />
-	</id>
--->
+
 	<property name="Path" />
 	<property name="Artist" />
 	<property name="Album" />

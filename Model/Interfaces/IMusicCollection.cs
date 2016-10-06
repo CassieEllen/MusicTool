@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MusicMerge
+namespace MusicTool.Model.Interfaces
 {
 	public interface IMusicCollection
 	{

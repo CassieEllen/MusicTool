@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using TagLib;
 
 
-namespace MusicMerge.Utils
+namespace MusicTool.Model.Impl
 {
 	public class Id3Tools
 	{

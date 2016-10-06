@@ -35,7 +35,7 @@ namespace MusicTool.Options
 		// these variables will be set when the command line is parsed
 		public int Verbose { get; set; } = 0;
 		public Boolean Reset { get; set; } = false;
-		Boolean Help { get; set; } = false;
+		public Boolean Help { get; set; } = false;
 		public string Merge { get; set; } = string.Empty;
 		public string ListFile { get; set; } = string.Empty;
 		public string Fix { get; set; } = string.Empty;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MusicTool.Domain
+namespace MusicTool.Model.Domain
 {
 	public class IgnoreFile : IDisposable
 	{

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using TagLib;
 using System.Text.RegularExpressions;
+using MusicTool.Model;
+using MusicTool.Model.Interfaces;
 
-namespace MusicMerge
+namespace MusicTool
 {
 	public class FixDiskNumber : IMusicCollection
 	{

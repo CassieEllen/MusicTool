@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace MusicTool.Domain
+namespace MusicTool.Model.Domain
 {
 	public class MusicFile : IDisposable
 	{
 		public virtual int Id { get; set; }
-		//public virtual Guid Id { get; set; }
 		public virtual string Path { get; set; }
 		public virtual string Artist { get; set; }
 		public virtual string Album { get; set; }
@@ -17,7 +16,7 @@ namespace MusicTool.Domain
 		{
 		}
 
-		public MusicFile(MusicMerge.MusicInfo info)
+		public MusicFile(MusicInfo info)
 		{
 			Path = info.Path;
 			Artist = info.Artist;

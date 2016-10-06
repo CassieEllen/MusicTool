@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="UTF-8" ?>
 
 <hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
-                   assembly="MusicMerge" 
-                   namespace="MusicMerge.Domain">
+                   assembly="Model" 
+                   namespace="MusicTool.Model.Domain">
 
   <class name="RejectFile" table="rejects">
   	<id name="Id" unsaved-value="0">

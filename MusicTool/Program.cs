@@ -14,10 +14,14 @@ using log4net;
 using log4net.Config;
 using NHibernate;
 using NHibernate.Cfg;
-using MusicMerge.Domain;
 using NHibernate.Tool.hbm2ddl;
 
+using MusicTool.Model.Domain;
 using MusicTool.Options;
+using MusicTool.Model;
+using MusicTool.Model.Interfaces;
+using MusicTool.Model.Impl;
+using MusicTool.Utils;
 
 
 /* Usage: MusicMerge [options] inputdir...
@@ -32,7 +36,7 @@ namespace MusicTool
 	/// <summary>
 	/// MainClass .
 	/// </summary>
-	class MusicTool : IDisposable
+	class MainClass : IDisposable
 	{
 		private static readonly log4net.ILog log =
 			log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -50,11 +54,11 @@ namespace MusicTool
 		}
 
 
-		public static MusicTool Instance { get; private set; }
+		public static MainClass Instance { get; private set; }
 
 		// Non-Static data
 		public ConfigOptions Options { get; protected set; }
-		public ISessionFactory factory { get; set; }
+		public ISessionFactory Factory { get; set; }
 
 		public List<DirectoryInfo> Directories => Options.Directories;
 
@@ -68,29 +72,37 @@ namespace MusicTool
 		public static int Main (string[] args)
 		{
 			ExitCode result = ExitCode.Success;
-
-			string appConfigFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
-			log.InfoFormat ("Config = {0}", appConfigFile);
-
-			XmlConfigurator.Configure(new System.IO.FileInfo("log4net.cfg.xml"));
-
-			// Set logging level to warn.
-			//((log4net.Repository.Hierarchy.Logger)logger.Logger).Level = log4net.Core.Level.Warn;
-
 			string exePath = System.Reflection.Assembly.GetEntryAssembly ().Location;
 			string exeName = Path.GetFileName (System.Reflection.Assembly.GetEntryAssembly ().Location);
 			string versionNumber = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
 			// Yields "mono..."
 			// System.Diagnostics.Process.GetCurrentProcess ().MainModule.FileName;
-				
+
+
+			//BasicConfigurator.Configure();
+			string filename = exeName + ".log4net";
+			Console.WriteLine(filename);
+			XmlConfigurator.Configure(new System.IO.FileInfo(filename));
+
+
+			string appConfigFile = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
+			log.InfoFormat ("Config = {0}", appConfigFile);
+
+			//XmlConfigurator.Configure(new System.IO.FileInfo("log4net.cfg.xml"));
+
+			// Set logging level to warn.
+			//((log4net.Repository.Hierarchy.Logger)logger.Logger).Level = log4net.Core.Level.Warn;
+
 			log.Info (exeName);
 
 			Console.WriteLine ("{0} {1}", exeName, versionNumber);
 			try {
-				Instance = new MusicTool ();
+				Instance = new MainClass ();
 				Instance.Options = new ConfigOptions();
-				Instance.ProcessArgs (args);
+				if( Instance.ProcessArgs (args) ) {
+					return (int) result;
+				}
 				Instance.Run ();
 				return (int) result;
 			} catch(FileNotFoundException e) {
@@ -115,7 +127,7 @@ namespace MusicTool
 		/// <summary>
 		/// Initializes a new instance of the <see cref="MusicMerge.MainClass"/> class.
 		/// </summary>
-		MusicTool()
+		MainClass()
 		{
 			log.Info ("starting logging");
 		}
@@ -131,7 +143,7 @@ namespace MusicTool
 		/// Processes the command line arguments.
 		/// </summary>
 		/// <param name="args">Arguments.</param>
-		private void ProcessArgs (string[] args)
+		private bool ProcessArgs (string[] args)
 		{
 			try {
 				Options.Parse(args);
@@ -141,7 +153,7 @@ namespace MusicTool
 				string message = "File not found: " + e.FileName;
 				throw new StopNowException (message, e);
 			}
-
+			return Options.Help;
 		}
 
 		protected void Run () {
@@ -159,9 +171,10 @@ namespace MusicTool
 			}
 
 			// Everything else needs nhibernate
-			ConfigureHibernate();
 
-			//return ExitCode.Success;
+			ConfigureHibernate cfg = new ConfigureHibernate (Options.Reset);
+			Factory = cfg.Factory;
+
 			Search ();
 
 			if (Options.DoMerge) {
@@ -169,59 +182,6 @@ namespace MusicTool
 			}
 
 			//return result;
-		}
-
-		/// <summary>
-		/// Configures the hibernate library.
-		/// </summary>
-		private void ConfigureHibernate()
-		{
-			log.Info ("Configuring Hibernate");
-
-			var cfg = new Configuration ();
-			cfg.Configure ();
-			cfg.AddAssembly (typeof(MusicFile).Assembly);
-
-			factory = cfg.BuildSessionFactory ();
-
-			if (factory == null) {
-				throw new NullReferenceException ("Hibernate Factory is null");
-			}
-
-			// For the following section to work, property hbm2ddl.auto must be commented out.
-			//   <!--
-			//   <property name="hbm2ddl.auto">update</property>
-			//	 -->
-			// Uncomment the property hbm2ddl.auto to always update the table automitically.
-			// and the following section will not matter.
-
-			if(Options.Reset) {
-				var schema = new SchemaExport(cfg);
-				schema.Execute(false, true, false);
-			} else {
-				new SchemaUpdate (cfg).Execute (false, true);
-			}
-
-			#if SHOW_SCHEMA
-			NHibernate.Dialect.Dialect d = new NHibernate.Dialect.MySQLDialect();
-			string[] x = cfg.GenerateSchemaCreationScript (d);
-			foreach (var s in x) {
-			Console.WriteLine (s);
-			}
-			#endif
-		
-			#if CLEAR_ENTRIES
-			if (Options.Reset) {
-				using (ISession session = factory.OpenSession ())
-				using (ITransaction tx = session.BeginTransaction ()) 
-				{
-					session.CreateQuery("delete MusicFile f").ExecuteUpdate();
-					session.CreateQuery("delete RejectFile r").ExecuteUpdate();
-					session.CreateQuery("delete IgnoreFile i").ExecuteUpdate();
-					tx.Commit ();
-				}
-			}
-			#endif
 		}
 
 		/// <summary>
@@ -253,7 +213,7 @@ namespace MusicTool
 			if (Options.Fix.Equals ("disk")) {
 				op = new FixDiskNumber ();
 			} else {
-				op = new DbMusicCollection (factory);
+				op = new DbMusicCollection (Factory);
 			}
 			MusicSearch ms = new MusicSearch ( op );
 			foreach (var dir in Directories) {
@@ -278,7 +238,7 @@ namespace MusicTool
 		/// </summary>
 		protected void FixFilename() {
 
-			IMusicCollection op = new MusicMerge.FixFilename ();
+			IMusicCollection op = new FixFilename ();
 			MusicSearch ms = new MusicSearch ( op );
 			foreach (var dir in Directories) {
 				ms.DrillDown (dir);

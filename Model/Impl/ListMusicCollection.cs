@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using MusicTool.Model.Interfaces;
 
-namespace MusicMerge
+namespace MusicTool.Model.Impl
 {
 	public class ListMusicCollection : IMusicCollection
 	{

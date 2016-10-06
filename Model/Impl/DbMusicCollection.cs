@@ -6,11 +6,13 @@ using System.Text.RegularExpressions;
 
 using NHibernate;
 using NHibernate.Linq;
-
-using MusicMerge.Domain;
 using TagLib;
 
-namespace MusicMerge
+using MusicTool.Model.Domain;
+using MusicTool.Model.Interfaces;
+using MusicTool.Utils;
+
+namespace MusicTool.Model.Impl
 {
 	public class DbMusicCollection : IMusicCollection
 	{
@@ -20,20 +22,79 @@ namespace MusicMerge
 		public bool limitSearch = false;
 		public int searchCount = 0;
 		public int stopCount = 3;
-		public bool normalizeName;
 
 		ISessionFactory factory;
 
 		public DbMusicCollection (ISessionFactory factory)
 		{
 			this.factory = factory;
+
+			limitSearch = true;
+			searchCount = 0;
+			stopCount = 3;
+		
+			string exePath = System.Reflection.Assembly.GetEntryAssembly ().Location;
+			string exeName = System.IO.Path.GetFileName (System.Reflection.Assembly.GetEntryAssembly ().Location);
+			string cfgFile = exePath + ".config";
+			log.InfoFormat ("cfgFile: {0}", cfgFile);
+			log.InfoFormat ("exePath: {0}", exePath);
+			log.InfoFormat ("exeName: {0}", exeName);
+
+			log.Info (AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
+
+
+			#if EXTERNAL_CONFIG
+			Configuration config = null;
+			string exeConfigPath = this.GetType().Assembly.Location;
+			//string exeConfigPath
+			try
+			{
+				//config = ConfigurationManager.OpenExeConfiguration(exeConfigPath);
+				config = ConfigurationManager.OpenExeConfiguration(exePath);
+			}
+			catch (Exception ex)
+			{
+				log.ErrorFormat ("{0}", ex.Message);
+				//handle errror here.. means DLL has no sattelite configuration file.
+			}
+			string ls = GetAppSetting(config, "limitsearch");			
+			string lc = GetAppSetting (config, "stopcount");
+			#else
 			string ls = ConfigurationManager.AppSettings ["limitsearch"];
-			limitSearch = Convert.ToBoolean (ls);
 			string lc = ConfigurationManager.AppSettings ["stopcount"];
-			stopCount = Convert.ToInt32 (lc);
-			string nn = ConfigurationManager.AppSettings ["limitsearch"];
-			normalizeName = Convert.ToBoolean (nn);
+			#endif
+
+			log.InfoFormat ("limitSearch: {0}", limitSearch);
+			log.InfoFormat ("stopCount: {0}", stopCount);
+
+			if (ls != null) {
+				limitSearch = Convert.ToBoolean (ls);
+			}
+			if (lc != null) {
+				stopCount = Convert.ToInt32 (lc);
+			}
+
+			// In case the configuration fails, use reasonable values.
+			if (stopCount == 0) {
+				limitSearch = false;
+			}
 		}
+
+		#if EXTERNAL_CONFIG
+		private string GetAppSetting(Configuration config, string key)
+		{
+			string x = ConfigurationManager.AppSettings [key];
+			log.InfoFormat ("x: {0}", x);
+			KeyValueConfigurationElement element = config.AppSettings.Settings[key];
+			if (element != null)
+			{
+				string value = element.Value;
+				if (!string.IsNullOrEmpty(value))
+					return value;
+			}
+			return string.Empty;
+		}
+		#endif
 
 		private bool IgnoreFileExists (MusicInfo info)
 		{			
@@ -147,7 +208,7 @@ namespace MusicMerge
 			info.Reason = "A";
 			log.InfoFormat ("{0} {1}", info.Reason, info.Path);
 			try {
-				using(MusicMerge.Domain.MusicFile file = new MusicFile (info))
+				using(MusicTool.Model.Domain.MusicFile file = new MusicFile (info))
 				using (ISession session = factory.OpenSession ())
 				using (ITransaction tx = session.BeginTransaction ()) 
 				{
@@ -164,7 +225,7 @@ namespace MusicMerge
 		private void SaveRejectFile(MusicInfo info) {
 			log.InfoFormat ("{0} {1}", info.Reason, info.Path);
 			try {
-				using(MusicMerge.Domain.RejectFile file = new RejectFile (info))
+				using(MusicTool.Model.Domain.RejectFile file = new RejectFile (info))
 				using (ISession session = factory.OpenSession ())
 				using (ITransaction tx = session.BeginTransaction ()) 
 				{
@@ -181,7 +242,7 @@ namespace MusicMerge
 		private void SaveIgnoreFile(MusicInfo info) {
 			log.InfoFormat ("{0} {1}", info.Reason, info.Path);
 			try {
-				using(MusicMerge.Domain.IgnoreFile file = new IgnoreFile (info))
+				using(MusicTool.Model.Domain.IgnoreFile file = new IgnoreFile (info))
 				using (ISession session = factory.OpenSession ())
 				using (ITransaction tx = session.BeginTransaction ()) 
 				{

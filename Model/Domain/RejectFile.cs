@@ -1,6 +1,7 @@
 ﻿using System;
+using MusicTool.Model;
 
-namespace MusicTool.Domain
+namespace MusicTool.Model.Domain
 {
 	public class RejectFile : IDisposable
 	{
@@ -17,7 +18,7 @@ namespace MusicTool.Domain
 		{
 		}
 
-		public RejectFile(MusicMerge.MusicInfo info)
+		public RejectFile(MusicInfo info)
 		{
 			Path = info.Path;
 			Artist = info.Artist;

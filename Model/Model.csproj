@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B8A812F2-6275-4D3C-A9BA-67455B61CD40}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Model</RootNamespace>
+    <RootNamespace>MusicTool.Model</RootNamespace>
     <AssemblyName>Model</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -29,10 +29,67 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections">
+      <HintPath>..\packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate">
+      <HintPath>..\packages\NHibernate.4.0.4.4000\lib\net40\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="policy.2.0.taglib-sharp">
+      <HintPath>..\packages\taglib.2.1.0.0\lib\policy.2.0.taglib-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="taglib-sharp">
+      <HintPath>..\packages\taglib.2.1.0.0\lib\taglib-sharp.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="MySql.Data">
+      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="MusicInfo.cs" />
+    <Compile Include="Domain\MusicFile.cs" />
+    <Compile Include="Domain\RejectFile.cs" />
+    <Compile Include="Interfaces\IMusicCollection.cs" />
+    <Compile Include="Impl\DbMusicCollection.cs" />
+    <Compile Include="Impl\ListMusicCollection.cs" />
+    <Compile Include="Impl\Id3Tools.cs" />
+    <Compile Include="MusicSearch.cs" />
+    <Compile Include="Impl\FixFilename.cs" />
+    <Compile Include="Impl\ConfigureHibernate.cs" />
+    <Compile Include="Domain\IgnoreFile.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="hibernate.cfg.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Interfaces\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Utils\Utils.csproj">
+      <Project>{ED95548F-3741-475F-801A-889F388A5982}</Project>
+      <Name>Utils</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ConsoleOptions\ConsoleOptions.csproj">
+      <Project>{10CDDE06-F973-4A15-8BD1-BA260BAA3E65}</Project>
+      <Name>ConsoleOptions</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Mappings\IgnoreFile.hbm.xml" />
+    <EmbeddedResource Include="Mappings\MusicFile.hbm.xml" />
+    <EmbeddedResource Include="Mappings\RejectFile.hbm.xml" />
+  </ItemGroup>
 </Project>

@@ -6,9 +6,11 @@ using System.Collections.Generic;
 using NHibernate;
 using NHibernate.Linq;
 
-using MusicMerge.Model.Domain;
+using MusicTool.Model.Domain;
+using MusicTool.Model.Interfaces;
+using MusicTool.Model.Impl;
 
-namespace MusicTool.Utils
+namespace MusicTool.Model
 {
 	/// <summary>
 	/// Searches down from a base music directory, adding, rejecting, or ignoring files.
@@ -149,7 +151,6 @@ namespace MusicTool.Utils
 		private void RejectEntry (string reason, MusicInfo info)
 		{
 			info.Reason = reason;
-			log.DebugFormat (" {0}  - {1}", info.Reason, info.Path);
 			musicCollection.Reject (info);
 		}
 
@@ -161,7 +162,6 @@ namespace MusicTool.Utils
 		private void IgnoreEntry (string reason, MusicInfo info)
 		{
 			info.Reason = reason;
-			log.DebugFormat (" {0}  - {1}", info.Reason, info.Path);
 			musicCollection.Ignore (info);
 		}
 

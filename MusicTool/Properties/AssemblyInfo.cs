@@ -25,3 +25,6 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyDelaySign(false)]
 //[assembly: AssemblyKeyFile("")]
 
+// See: http://logging.apache.org/log4net/release/manual/configuration.html
+// Config file name is MusicTool.exe.config
+[assembly: log4net.Config.XmlConfigurator(Watch=true)]

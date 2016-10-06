@@ -2,7 +2,11 @@
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace MusicMerge
+using MusicTool.Model.Domain;
+using MusicTool.Model.Interfaces;
+using MusicTool.Model.Impl;
+
+namespace MusicTool.Model.Impl
 {
 	public class FixFilename : IMusicCollection
 	{
