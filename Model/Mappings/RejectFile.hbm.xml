@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="MusicMerge" 
+                   namespace="MusicMerge.Domain">
+
+  <class name="RejectFile" table="rejects">
+  	<id name="Id" unsaved-value="0">
+		<generator class="native" />
+	</id>
+	<!--
+	<id name="Id">
+		<generator class="guid" />
+	</id>
+	-->
+
+	<property name="Path" />
+	<property name="Artist" />
+	<property name="Album" />
+	<property name="Title" />
+	<property name="Size" />
+	<property name="Reason" />
+  </class>
+
+</hibernate-mapping>

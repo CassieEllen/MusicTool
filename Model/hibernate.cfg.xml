@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<hibernate-configuration xmlns="urn:nhibernate-configuration-2.2">
+	<!-- an ISessionFactory instance -->
+	<session-factory>
+		<!-- properties -->
+		<property name="connection.provider">NHibernate.Connection.DriverConnectionProvider</property>
+		<property name="connection.driver_class">NHibernate.Driver.MySqlDataDriver</property>
+		<property name="connection.connection_string">Server=localhost;Database=musictool;Uid=musictool;Pwd=mtpasswd;</property>
+		<!-- Will automatically create a fresh table each time we create an ISessionFactory object -->
+		<!--
+		<property name="hbm2ddl.auto">update</property>
+		-->
+		<property name="dialect">NHibernate.Dialect.MySQLDialect</property>
+		<property name="show_sql">false</property>
+
+	</session-factory>
+</hibernate-configuration>

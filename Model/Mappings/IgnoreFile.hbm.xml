@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="MusicMerge" 
+                   namespace="MusicMerge.Domain">
+
+  <class name="IgnoreFile" table="ignored">
+	<id name="Id" unsaved-value="0">
+		<generator class="native" />
+	</id>
+
+	<property name="Path" />
+	<property name="Reason" />
+  </class>
+
+</hibernate-mapping>
