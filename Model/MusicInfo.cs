@@ -34,8 +34,7 @@ namespace MusicTool.Model
 		public string Path {
 			get {
 				string[] parts = new string[] { Base, Artist, Album, Title };
-				string p = System.IO.Path.Combine (parts);
-				return System.IO.Path.GetFullPath (p);
+				return System.IO.Path.Combine (parts);
 			}
 		}
 

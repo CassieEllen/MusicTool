@@ -10,6 +10,7 @@
 	</id>
 
 	<property name="Path" />
+	<property name="Base" />
 	<property name="Artist" />
 	<property name="Album" />
 	<property name="Title" />

@@ -12,7 +12,7 @@ namespace MusicTool.Model
 
 		public ConfigureHibernate (bool reset)
 		{
-			Console.WriteLine (typeof(MusicFile).Assembly.ToString ());
+			//Console.WriteLine (typeof(MusicFile).Assembly.ToString ());
 			var cfg = new Configuration ();
 			cfg.Configure ();
 			cfg.AddAssembly (typeof(MusicFile).Assembly);

@@ -19,11 +19,11 @@ namespace MusicTool.Model.Impl
 		private static readonly log4net.ILog log =
 		log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 		
+		ISessionFactory factory;
+
 		public bool limitSearch = false;
 		public int searchCount = 0;
 		public int stopCount = 3;
-
-		ISessionFactory factory;
 
 		public DbMusicCollection (ISessionFactory factory)
 		{

@@ -82,7 +82,7 @@ namespace MusicTool
 
 			//BasicConfigurator.Configure();
 			string filename = exeName + ".log4net";
-			Console.WriteLine(filename);
+			//Console.WriteLine(filename);
 			XmlConfigurator.Configure(new System.IO.FileInfo(filename));
 
 
@@ -104,6 +104,7 @@ namespace MusicTool
 					return (int) result;
 				}
 				Instance.Run ();
+				log.Info("done.");
 				return (int) result;
 			} catch(FileNotFoundException e) {
 				Console.Error.WriteLine ("FileNotFoundException: {0}: {1}", e.Message, e.FileName);
@@ -121,6 +122,7 @@ namespace MusicTool
 				Console.Error.WriteLine (e.StackTrace);
 				result = ExitCode.Exception;
 			}
+			log.Info("done.");
 			return (int)result;
 		}
 
@@ -177,6 +179,11 @@ namespace MusicTool
 
 			Search ();
 
+			if (!String.IsNullOrEmpty (Options.Merge)) {
+				FindDupes findDupes = new FindDupes (Options, Factory);
+				findDupes.Run ();
+			}
+
 			if (Options.DoMerge) {
 				
 			}
@@ -216,19 +223,11 @@ namespace MusicTool
 				op = new DbMusicCollection (Factory);
 			}
 			MusicSearch ms = new MusicSearch ( op );
-			foreach (var dir in Directories) {
-				ms.DrillDown (dir);
+			if (Options.Verbose > 0) {
+				foreach (var dir in Directories) {
+					ms.DrillDown (dir);
+				}
 			}
-
-#if USE_LIST
-			var mc = new ListMusicCollection ();
-			MusicSearch mm = new MusicSearch( mc );
-			mm.DrillDown (GetDirectoryInfo (merge));
-			var entries = mc.Entries;
-			foreach (var entry in entries ) {
-				Console.WriteLine (entry);
-			}
-#endif
 
 			return ExitCode.Success;
 		}

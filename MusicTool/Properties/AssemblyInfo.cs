@@ -27,4 +27,5 @@ using System.Runtime.CompilerServices;
 
 // See: http://logging.apache.org/log4net/release/manual/configuration.html
 // Config file name is MusicTool.exe.config
-[assembly: log4net.Config.XmlConfigurator(Watch=true)]
+//[assembly: log4net.Config.XmlConfigurator(Watch=true)]
+[assembly: log4net.Config.XmlConfigurator(ConfigFileExtension="log4net",Watch=true)]
