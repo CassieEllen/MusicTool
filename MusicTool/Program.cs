@@ -223,10 +223,8 @@ namespace MusicTool
 				op = new DbMusicCollection (Factory);
 			}
 			MusicSearch ms = new MusicSearch ( op );
-			if (Options.Verbose > 0) {
-				foreach (var dir in Directories) {
-					ms.DrillDown (dir);
-				}
+			foreach (var dir in Directories) {
+				ms.DrillDown (dir);
 			}
 
 			return ExitCode.Success;
